@@ -54,24 +54,44 @@ export class MoviesImporter {
             return [];
         }
 
+        // Tenta converter como JSON
         try {
-            // Limpar e corrigir formato JSON
             const cleaned = fieldValue.replace(/'/g, '"').replace(/None/g, 'null');
-            return JSON.parse(cleaned);
+            const parsed = JSON.parse(cleaned);
+            if (Array.isArray(parsed)) return parsed;
         } catch (error) {
-            try {
-                // Fallback: tentar eval (cuidado em produção!)
-                return eval(`(${fieldValue})`) || [];
-            } catch (evalError) {
-                console.warn(`⚠️  Erro ao processar JSON: ${fieldValue.substring(0, 50)}...`);
-                return [];
-            }
+            // Não é JSON, segue para próximo tratamento
         }
+
+        // Se não for JSON, trata como lista separada por vírgula
+        if (typeof fieldValue === 'string') {
+            // Remove aspas duplas do início/fim, se houver
+            const trimmed = fieldValue.trim().replace(/^"(.*)"$/, '$1');
+            // Divide por vírgula e remove espaços extras
+            const arr = trimmed.split(',').map(s => s.trim()).filter(Boolean);
+            // Retorna como array de objetos { name: string }
+            return arr.map(name => ({ name })) as T[];
+        }
+
+        return [];
     }
 
     private cleanMovieData(rawMovie: RawMovieData): CleanMovieData {
         const now = new Date();
         
+        // Função auxiliar para extrair apenas o campo 'name' (ou equivalente)
+        const extractNames = <T extends { name?: string; iso_3166_1?: string; iso_639_1?: string; english_name?: string }>(arr: T[], type: string): string[] => {
+            if (!Array.isArray(arr)) return [];
+            switch (type) {
+                case 'production_countries':
+                    return arr.map((item) => item.name || item.iso_3166_1 || '');
+                case 'spoken_languages':
+                    return arr.map((item) => item.english_name || item.name || item.iso_639_1 || '');
+                default:
+                    return arr.map((item) => item.name || '');
+            }
+        };
+
         return {
             movie_id: parseInt(rawMovie.id) || 0,
             title: rawMovie.title || '',
@@ -99,12 +119,12 @@ export class MoviesImporter {
             backdrop_path: rawMovie.backdrop_path || '',
             poster_path: rawMovie.poster_path || '',
             
-            // Arrays de objetos
-            genres: this.parseJsonField<Genre>(rawMovie.genres),
-            production_companies: this.parseJsonField<ProductionCompany>(rawMovie.production_companies),
-            production_countries: this.parseJsonField<ProductionCountry>(rawMovie.production_countries),
-            spoken_languages: this.parseJsonField<SpokenLanguage>(rawMovie.spoken_languages),
-            keywords: this.parseJsonField<Keyword>(rawMovie.keywords),
+            // Arrays de strings (apenas nomes)
+            genres: extractNames(this.parseJsonField<Genre>(rawMovie.genres), 'genres'),
+            production_companies: extractNames(this.parseJsonField<ProductionCompany>(rawMovie.production_companies), 'production_companies'),
+            production_countries: extractNames(this.parseJsonField<ProductionCountry>(rawMovie.production_countries), 'production_countries'),
+            spoken_languages: extractNames(this.parseJsonField<SpokenLanguage>(rawMovie.spoken_languages), 'spoken_languages'),
+            keywords: extractNames(this.parseJsonField<Keyword>(rawMovie.keywords), 'keywords'),
             
             // Metadados
             inserted_at: now,

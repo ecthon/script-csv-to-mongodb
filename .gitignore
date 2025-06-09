@@ -3,7 +3,7 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-data
+data/
 
 # Build output
 dist/
@@ -33,3 +33,5 @@ Thumbs.db
 logs
 *.log
 
+
+/src/generated/prisma

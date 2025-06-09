@@ -73,11 +73,11 @@ export interface CleanMovieData {
     popularity: number;
     backdrop_path: string;
     poster_path: string;
-    genres: Genre[];
-    production_companies: ProductionCompany[];
-    production_countries: ProductionCountry[];
-    spoken_languages: SpokenLanguage[];
-    keywords: Keyword[];
+    genres: string[];
+    production_companies: string[];
+    production_countries: string[];
+    spoken_languages: string[];
+    keywords: string[];
     inserted_at: Date;
     updated_at: Date;
 }

@@ -49,7 +49,9 @@ npm run build
 npm start
 ```
 
-O sistema irá pedir o caminho do arquivo CSV. Exemplo:
+O sistema irá pedir o caminho do arquivo CSV. Exemplo:<br>
+Faça download do arquivo `.csv` clicando [aqui https://www.kaggle.com/datasets/asaniczka/tmdb-movies-dataset-2023-930k-movies](https://www.kaggle.com/datasets/asaniczka/tmdb-movies-dataset-2023-930k-movies).
+
 ```
 📁 Digite o caminho do arquivo CSV: data/TMDB_movie_dataset_v11.csv
 ```
@@ -114,8 +116,5 @@ Exemplos de consultas disponíveis:
 - O projeto cria índices automaticamente para acelerar buscas por título, data, popularidade, etc.
 - O importador faz parsing de campos complexos (como listas de gêneros) mesmo se vierem como string simples.
 - Não suba seu arquivo `.env` para o GitHub (já está no `.gitignore`).
-- O código está todo comentado e em português para facilitar a avaliação.
 
 ---
-
-Qualquer dúvida, consulte os comentários no código ou abra uma issue! 

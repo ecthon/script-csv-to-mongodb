@@ -40,7 +40,7 @@ async function testConnection(): Promise<void> {
         
         // Limpar teste
         await collection.deleteOne({ _id: result.insertedId });
-        console.log('🧹 Documento de teste removido');
+        console.log('Documento de teste removido');
         
         console.log('\n🎉 CONEXÃO FUNCIONANDO PERFEITAMENTE!');
         console.log('Agora você pode executar o importador principal.');
